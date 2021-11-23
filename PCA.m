@@ -1,0 +1,23 @@
+clc,clear
+sn=csvread('data_by_artist (3) - PCA.csv') 
+[m,n]=size(sn);num=8; 
+mu=mean(sn);sigma=std(sn);
+snb=zscore(sn);
+b=snb(:,1:end-1); 
+r=cov(b); 
+[x,y,z]=pcacov(r);
+f=repmat(sign(sum(x)),size(x,1),1);
+x=x.*f;
+r=[ones(m,1),b]\snb(:,end); 
+bzh=mu./sigma;
+ch10=mu(end)-bzh(1:end-1)*r(2:end)*sigma(end) 
+fr=r(2:end);fr=fr';
+ch1=fr./sigma(1:end-1)*sigma(end)
+pval=b*x(:,1:num);
+rp=[ones(m,1),pval]\snb(:,end); 
+beta=x(:,1:num)*rp(2:num+1);
+ch20=mu(end)-bzh(1:end-1)*beta*sigma(end) 
+fr=beta';
+ch2=fr./sigma(1:end-1)*sigma(end) 
+check1=sqrt(sum((sn(:,1:end-1)*ch1'+ch10-sn(:,end)).^2)/(m-n))
+check2=sqrt(sum((sn(:,1:end-1)*ch2'+ch20-sn(:,end)).^2)/(m-num-1)) 
